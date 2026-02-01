@@ -1,0 +1,2 @@
+keytool -genkey -v -keystore 0gravity.jks \
+  -alias 0gravity -keyalg RSA -keysize 2048 -validity 3650

@@ -1,9 +1,9 @@
 
 <resources>
-    <string name="app_name">GeckoBrowser</string>
+    <string name="app_name">)gravity</string>
     <string name="fab_description">Navigation button</string>
     <string name="enter_url">Enter URL</string>
-    <string name="url_hint">example.com</string>
+    <string name="url_hint">google.com</string>
     <string name="go">Go</string>
     <string name="cancel">Cancel</string>
     <string name="back">Back</string>

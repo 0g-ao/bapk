@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity(), UrlEntryDialogFragment.UrlEntryListene
         }
 
         geckoView.setSession(geckoSession)
-        geckoSession.loadUri("https://en.wikipedia.org/wiki/Main_Page")
+        geckoSession.loadUri("https://google.com")
 
         setupDelegates()
         setupFab()

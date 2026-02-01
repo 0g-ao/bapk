@@ -1,0 +1,3 @@
+git config core.hookspath
+cd .git/hooks
+rm pre-push
