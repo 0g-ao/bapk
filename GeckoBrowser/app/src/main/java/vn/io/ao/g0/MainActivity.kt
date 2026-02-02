@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.GestureDetector
+import android.widget.Toast
 import android.view.MotionEvent
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -36,6 +37,12 @@ class MainActivity : AppCompatActivity(), UrlEntryDialogFragment.UrlEntryListene
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Apply saved theme mode early to ensure proper theming
+        val prefs = getSharedPreferences("browser_prefs", MODE_PRIVATE)
+        val savedThemeMode = prefs.getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        AppCompatDelegate.setDefaultNightMode(savedThemeMode)
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -135,6 +142,18 @@ class MainActivity : AppCompatActivity(), UrlEntryDialogFragment.UrlEntryListene
         // Vô hiệu hóa nút 'Back' nếu không thể quay lại
         popupMenu.menu.findItem(R.id.action_back).isEnabled = canGoBack
 
+        // Update theme menu title to show current mode
+        val themeItem = popupMenu.menu.findItem(R.id.action_toggle_dark_mode)
+        val prefs = getSharedPreferences("browser_prefs", MODE_PRIVATE)
+        val currentMode = prefs.getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        val modeTitleRes = when (currentMode) {
+            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM -> R.string.theme_system
+            AppCompatDelegate.MODE_NIGHT_NO -> R.string.theme_light
+            AppCompatDelegate.MODE_NIGHT_YES -> R.string.theme_dark
+            else -> R.string.theme_system
+        }
+        themeItem.title = getString(R.string.theme_mode_label, getString(modeTitleRes))
+
         popupMenu.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.action_back -> {
@@ -146,7 +165,14 @@ class MainActivity : AppCompatActivity(), UrlEntryDialogFragment.UrlEntryListene
                     true
                 }
                 R.id.action_toggle_dark_mode -> {
-                    toggleDarkMode()
+                    val newMode = toggleDarkMode()
+                    val newTitleRes = when (newMode) {
+                        AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM -> R.string.theme_system
+                        AppCompatDelegate.MODE_NIGHT_NO -> R.string.theme_light
+                        AppCompatDelegate.MODE_NIGHT_YES -> R.string.theme_dark
+                        else -> R.string.theme_system
+                    }
+                    Toast.makeText(this, getString(R.string.theme_mode_label, getString(newTitleRes)), Toast.LENGTH_SHORT).show()
                     true
                 }
                 R.id.action_about -> {
@@ -159,16 +185,18 @@ class MainActivity : AppCompatActivity(), UrlEntryDialogFragment.UrlEntryListene
         popupMenu.show()
     }
 
-    private fun toggleDarkMode() {
-        val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        when (currentNightMode) {
-            Configuration.UI_MODE_NIGHT_NO -> {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            }
-            Configuration.UI_MODE_NIGHT_YES -> {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
+    private fun toggleDarkMode(): Int {
+        val prefs = getSharedPreferences("browser_prefs", MODE_PRIVATE)
+        val currentMode = prefs.getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        val newMode = when (currentMode) {
+            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM -> AppCompatDelegate.MODE_NIGHT_NO
+            AppCompatDelegate.MODE_NIGHT_NO -> AppCompatDelegate.MODE_NIGHT_YES
+            AppCompatDelegate.MODE_NIGHT_YES -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+            else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
         }
+        prefs.edit().putInt("theme_mode", newMode).apply()
+        AppCompatDelegate.setDefaultNightMode(newMode)
+        return newMode
     }
 
     override fun onUrlEntered(url: String) {
