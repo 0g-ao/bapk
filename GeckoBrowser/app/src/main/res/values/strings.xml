@@ -1,0 +1,17 @@
+
+<resources>
+    <string name="app_name">0gravity</string>
+    <string name="fab_description">Navigation button</string>
+    <string name="enter_url">Enter URL</string>
+    <string name="url_hint">google.com</string>
+    <string name="go">Go</string>
+    <string name="cancel">Cancel</string>
+    <string name="back">Back</string>
+    <string name="reload">Reload</string>
+    <string name="toggle_dark_mode">Toggle Dark Mode</string>
+    <string name="action_about">About</string>
+    <string name="about_title">About 0gravity</string>
+    <string name="credits">Developed by 0gravity Team.\nPowered by Mozilla GeckoView.</string>
+    <string name="thank_you">Special thanks to all our users and contributors!</string>
+    <string name="ok">OK</string>
+</resources>
